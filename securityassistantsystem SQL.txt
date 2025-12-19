@@ -1,0 +1,399 @@
+
+--
+-- Database: `securityassistantsystem`
+--
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `accesscontrol`
+--
+
+DROP TABLE IF EXISTS `accesscontrol`;
+CREATE TABLE IF NOT EXISTS `accesscontrol` (
+  `AccessControlID` int NOT NULL AUTO_INCREMENT,
+  `UserID` int NOT NULL,
+  `AccessLevel` enum('FULL','LIMITED','RESTRICTED') NOT NULL,
+  `Zone` varchar(50) NOT NULL,
+  `ValidFrom` timestamp NULL DEFAULT CURRENT_TIMESTAMP,
+  `ValidUntil` timestamp NULL DEFAULT NULL,
+  `CreatedAt` timestamp NULL DEFAULT CURRENT_TIMESTAMP,
+  PRIMARY KEY (`AccessControlID`),
+  KEY `UserID` (`UserID`)
+) ENGINE=MyISAM AUTO_INCREMENT=9 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+
+--
+-- Dumping data for table `accesscontrol`
+--
+
+INSERT INTO `accesscontrol` (`AccessControlID`, `UserID`, `AccessLevel`, `Zone`, `ValidFrom`, `ValidUntil`, `CreatedAt`) VALUES
+(1, 1, 'FULL', 'ALL_ZONES', '2023-12-31 22:00:00', '2024-12-31 22:00:00', '2025-10-26 15:26:45'),
+(2, 2, 'LIMITED', 'NORTH_ZONE,EAST_ZONE', '2023-12-31 22:00:00', '2024-12-31 21:59:59', '2025-10-26 15:26:45'),
+(3, 3, 'LIMITED', 'SOUTH_ZONE,WEST_ZONE', '2023-12-31 22:00:00', '2024-12-31 21:59:59', '2025-10-26 15:26:45'),
+(4, 4, 'RESTRICTED', 'LOBBY,RECEPTION', '2023-12-31 22:00:00', '2024-06-30 21:59:59', '2025-10-26 15:26:45'),
+(5, 5, 'RESTRICTED', 'PARKING,ENTRANCE', '2023-12-31 22:00:00', '2024-06-30 21:59:59', '2025-10-26 15:26:45'),
+(6, 6, 'RESTRICTED', 'LOBBY,MEETING_ROOMS', '2023-12-31 22:00:00', '2024-03-31 21:59:59', '2025-10-26 15:26:45'),
+(7, 2, 'FULL', 'SERVER_ROOM', '2024-01-10 06:00:00', '2024-01-10 16:00:00', '2025-10-26 15:26:45'),
+(8, 3, 'LIMITED', 'WAREHOUSE,LOADING_DOCK', '2024-01-15 04:00:00', '2024-01-15 20:00:00', '2025-10-26 15:26:45');
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `access_control`
+--
+
+DROP TABLE IF EXISTS `access_control`;
+CREATE TABLE IF NOT EXISTS `access_control` (
+  `id` int NOT NULL AUTO_INCREMENT,
+  `door_name` varchar(100) NOT NULL,
+  `access_level` varchar(50) NOT NULL,
+  `status` varchar(20) NOT NULL,
+  `last_accessed` timestamp NULL DEFAULT NULL,
+  PRIMARY KEY (`id`)
+) ENGINE=MyISAM DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `alerts`
+--
+
+DROP TABLE IF EXISTS `alerts`;
+CREATE TABLE IF NOT EXISTS `alerts` (
+  `AlertID` int NOT NULL AUTO_INCREMENT,
+  `ReferenceID` varchar(50) NOT NULL,
+  `EventID` int NOT NULL,
+  `Description` text NOT NULL,
+  `AlertDate` timestamp NULL DEFAULT CURRENT_TIMESTAMP,
+  `Status` varchar(30) DEFAULT NULL,
+  `Priority` enum('LOW','MEDIUM','HIGH','URGENT') DEFAULT 'LOW',
+  `Remarks` text,
+  PRIMARY KEY (`AlertID`),
+  UNIQUE KEY `ReferenceID` (`ReferenceID`),
+  KEY `EventID` (`EventID`)
+) ENGINE=MyISAM AUTO_INCREMENT=11 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+
+--
+-- Dumping data for table `alerts`
+--
+
+INSERT INTO `alerts` (`AlertID`, `ReferenceID`, `EventID`, `Description`, `AlertDate`, `Status`, `Priority`, `Remarks`) VALUES
+(1, 'ALT-2024-001', 1, 'HIGH severity intrusion detected at main entrance', '2024-01-15 00:30:30', 'PENDING', 'HIGH', 'Automated alert - security team notified'),
+(2, 'ALT-2024-002', 3, 'Suspicious activity at loading dock requires immediate attention', '2024-01-15 03:20:20', 'PENDING', 'URGENT', 'Vehicle description: Black SUV, no plates'),
+(3, 'ALT-2024-003', 4, 'CRITICAL access violation - server room security breach', '2024-01-15 06:45:35', 'RESOLVED', 'URGENT', '5 failed attempts within 2 minutes'),
+(4, 'ALT-2024-004', 10, 'Environmental alert - data center temperature critical', '2024-01-13 12:35:15', 'ACKNOWLEDGED', 'HIGH', 'Temperature reached 85°F, threshold is 75°F'),
+(5, 'ALT-2024-005', 6, 'After-hours motion in restricted warehouse area', '2024-01-14 20:45:25', 'RESOLVED', 'MEDIUM', 'Verified with maintenance schedule'),
+(6, 'ALT-2024-006', 8, 'Emergency exit security breach', '2024-01-14 14:20:35', 'RESOLVED', 'HIGH', 'Exit door open for 45 seconds'),
+(7, 'ALT-2024-007', 11, 'Security gate violation - vehicle tailgating', '2024-01-13 09:25:40', 'RESOLVED', 'HIGH', 'Second vehicle identified and logged'),
+(8, 'ALT-2024-008', 15, 'Perimeter security compromised - door left open', '2024-01-10 21:45:35', 'RESOLVED', 'HIGH', 'Night security round discovered issue'),
+(9, 'ALT-2024-009', 7, 'Internal security policy violation - propped open door', '2024-01-14 17:30:50', 'PENDING', 'MEDIUM', 'Door left open for 15 minutes'),
+(10, 'ALT-2024-010', 2, 'Continuous motion detection in lobby after hours', '2024-01-15 01:15:45', 'ACKNOWLEDGED', 'MEDIUM', 'Activity ongoing for 25+ minutes');
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `cameras`
+--
+
+DROP TABLE IF EXISTS `cameras`;
+CREATE TABLE IF NOT EXISTS `cameras` (
+  `CameraID` int NOT NULL AUTO_INCREMENT,
+  `CameraName` varchar(100) NOT NULL,
+  `Location` varchar(100) NOT NULL,
+  `Status` enum('ACTIVE','INACTIVE','MAINTENANCE') DEFAULT 'ACTIVE',
+  `IPAddress` varchar(15) NOT NULL,
+  `AccessControlID` int NOT NULL,
+  `CreatedAt` timestamp NULL DEFAULT CURRENT_TIMESTAMP,
+  PRIMARY KEY (`CameraID`),
+  KEY `AccessControlID` (`AccessControlID`)
+) ENGINE=MyISAM AUTO_INCREMENT=39 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+
+--
+-- Dumping data for table `cameras`
+--
+
+INSERT INTO `cameras` (`CameraID`, `CameraName`, `Location`, `Status`, `IPAddress`, `AccessControlID`, `CreatedAt`) VALUES
+(16, 'Main Gate Cam', 'Main Entrance', 'ACTIVE', '192.168.1.10', 1, '2025-11-05 18:44:23'),
+(17, 'Parking Lot Cam', 'Parking Area', 'ACTIVE', '192.168.1.11', 1, '2025-11-05 18:44:23'),
+(18, 'Admin Block Cam', 'Admin Building', 'MAINTENANCE', '192.168.1.12', 2, '2025-11-05 18:44:23'),
+(19, 'Library Cam', 'Library Hall', 'ACTIVE', '192.168.1.13', 2, '2025-11-05 18:44:23'),
+(20, 'Cafeteria Cam', 'Student Cafeteria', 'INACTIVE', '192.168.1.14', 3, '2025-11-05 18:44:23'),
+(21, 'Hostel Entrance Cam', 'Hostel A - Main Gate', 'ACTIVE', '192.168.2.15', 3, '2025-11-05 18:44:23'),
+(23, 'Sports Field Cam', 'Football Ground', 'INACTIVE', '192.168.1.17', 4, '2025-11-05 18:44:23'),
+(24, 'Back Gate Cam', 'Rear Entrance', 'ACTIVE', '192.168.1.18', 5, '2025-11-05 18:44:23'),
+(25, 'Security Office Cam', 'Control Room', 'MAINTENANCE', '192.168.1.19', 5, '2025-11-05 18:44:23'),
+(26, 'Main Gate Cam', 'Main Entrance', 'ACTIVE', '192.168.1.10', 1, '2025-11-05 18:44:41'),
+(27, 'Parking Lot Cam', 'Parking Area', 'ACTIVE', '192.168.1.11', 1, '2025-11-05 18:44:41'),
+(28, 'Admin Block Cam', 'Admin Building', 'MAINTENANCE', '192.168.1.12', 2, '2025-11-05 18:44:41'),
+(29, 'Library Cam', 'Library Hall', 'ACTIVE', '192.168.1.13', 2, '2025-11-05 18:44:41'),
+(30, 'Cafeteria Cam', 'Student Cafeteria', 'INACTIVE', '192.168.1.14', 3, '2025-11-05 18:44:41'),
+(37, 'Auditorium', 'Behind the auditorium ', 'ACTIVE', '192.168.1.5', 2, '2025-12-02 21:01:30'),
+(32, 'ICT Lab Cam', 'ICT Laboratory', 'ACTIVE', '192.168.1.16', 4, '2025-11-05 18:44:41'),
+(33, 'Sports Field Cam', 'Football Ground', 'INACTIVE', '192.168.1.17', 4, '2025-11-05 18:44:41'),
+(34, 'Back Gate Cam', 'Rear Entrance', 'ACTIVE', '192.168.1.18', 5, '2025-11-05 18:44:41'),
+(35, 'Security Office Cam', 'Control Room', 'MAINTENANCE', '192.168.1.19', 5, '2025-11-05 18:44:41'),
+(36, 'RoofTop camera', 'Batima', 'INACTIVE', '192.164.3.0', 2, '2025-11-05 18:50:41'),
+(38, 'Playground Cam', 'Behind stadium', 'ACTIVE', '192.168.1.10', 1, '2025-12-18 14:55:20');
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `eventalerts`
+--
+
+DROP TABLE IF EXISTS `eventalerts`;
+CREATE TABLE IF NOT EXISTS `eventalerts` (
+  `EventID` int NOT NULL,
+  `AlertID` int NOT NULL,
+  PRIMARY KEY (`EventID`,`AlertID`),
+  KEY `AlertID` (`AlertID`)
+) ENGINE=MyISAM DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+
+--
+-- Dumping data for table `eventalerts`
+--
+
+INSERT INTO `eventalerts` (`EventID`, `AlertID`) VALUES
+(1, 1),
+(2, 10),
+(3, 2),
+(4, 3),
+(6, 5),
+(7, 9),
+(8, 6),
+(10, 4),
+(11, 7),
+(15, 8);
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `events`
+--
+
+DROP TABLE IF EXISTS `events`;
+CREATE TABLE IF NOT EXISTS `events` (
+  `EventID` int NOT NULL AUTO_INCREMENT,
+  `ReferenceID` varchar(50) NOT NULL,
+  `CameraID` int NOT NULL,
+  `Description` text NOT NULL,
+  `EventType` enum('MOTION','INTRUSION','UNAUTHORIZED','SYSTEM') NOT NULL,
+  `EventDate` timestamp NULL DEFAULT CURRENT_TIMESTAMP,
+  `Status` varchar(50) DEFAULT NULL,
+  `Severity` enum('LOW','MEDIUM','HIGH','CRITICAL') DEFAULT 'LOW',
+  `Remarks` text,
+  PRIMARY KEY (`EventID`),
+  UNIQUE KEY `ReferenceID` (`ReferenceID`),
+  KEY `CameraID` (`CameraID`)
+) ENGINE=MyISAM AUTO_INCREMENT=16 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+
+--
+-- Dumping data for table `events`
+--
+
+INSERT INTO `events` (`EventID`, `ReferenceID`, `CameraID`, `Description`, `EventType`, `EventDate`, `Status`, `Severity`, `Remarks`) VALUES
+(1, 'EVT-2024-001', 1, 'Unauthorized access attempt at main entrance', 'INTRUSION', '2024-01-15 00:30:25', 'PENDING', 'HIGH', 'Security guard responded and verified'),
+(2, 'EVT-2024-002', 3, 'Motion detected in lobby after hours', 'MOTION', '2024-01-15 01:15:40', 'IN-PROGRESS', 'MEDIUM', 'Cleaning staff verified'),
+(3, 'EVT-2024-003', 6, 'Suspicious vehicle at loading dock', 'UNAUTHORIZED', '2024-01-15 03:20:15', 'IN-PROGRESS', 'HIGH', 'Vehicle left premises without delivery'),
+(4, 'EVT-2024-004', 4, 'Multiple failed access attempts - server room', 'INTRUSION', '2024-01-15 06:45:30', '', 'CRITICAL', 'Employee forgot access card'),
+(5, 'EVT-2024-005', 2, 'Parking lot camera obstruction detected', 'SYSTEM', '2024-01-15 07:10:05', 'PENDING', 'LOW', 'Snow accumulation cleared'),
+(6, 'EVT-2024-006', 7, 'After-hours movement in warehouse', 'MOTION', '2024-01-14 20:45:18', 'RESOLVED', 'MEDIUM', 'Authorized maintenance personnel'),
+(7, 'EVT-2024-007', 5, 'Propped open corridor door', 'UNAUTHORIZED', '2024-01-14 17:30:45', 'IN-PROGRESS', 'MEDIUM', 'Door secured at 19:45'),
+(8, 'EVT-2024-008', 8, 'Emergency exit alarm triggered', 'SYSTEM', '2024-01-14 14:20:30', 'PENDING', 'HIGH', 'False alarm - strong wind'),
+(9, 'EVT-2024-009', 10, 'Crowd formation at cafeteria entrance', 'MOTION', '2024-01-14 10:15:20', 'RESOLVED', 'LOW', 'Lunch rush hour'),
+(10, 'EVT-2024-010', 11, 'Temperature threshold exceeded in data center', 'SYSTEM', '2024-01-13 12:35:10', 'PENDING', 'CRITICAL', 'AC unit repaired'),
+(11, 'EVT-2024-011', 13, 'Vehicle tailgating at north gate', 'UNAUTHORIZED', '2024-01-13 09:25:35', 'IN-PROGRESS', 'HIGH', 'Security intercepted second vehicle'),
+(12, 'EVT-2024-012', 14, 'Unattended package in shipping area', 'MOTION', '2024-01-12 13:40:25', 'IN-PROGRESS', 'MEDIUM', 'Package retrieved by owner'),
+(13, 'EVT-2024-013', 1, 'Visitor without badge attempting entry', 'INTRUSION', '2024-01-12 08:15:50', 'IN-PROGRESS', 'MEDIUM', 'Visitor escorted to reception'),
+(14, 'EVT-2024-014', 3, 'Lobby camera focus issue', 'SYSTEM', '2024-01-11 11:20:15', 'RESOLVED', 'LOW', 'Camera recalibrated'),
+(15, 'EVT-2024-015', 6, 'Loading dock door left open overnight', 'UNAUTHORIZED', '2024-01-10 21:45:30', '', 'HIGH', 'Door secured, incident reported');
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `logs`
+--
+
+DROP TABLE IF EXISTS `logs`;
+CREATE TABLE IF NOT EXISTS `logs` (
+  `LogID` int NOT NULL AUTO_INCREMENT,
+  `UserID` int NOT NULL,
+  `Action` varchar(100) NOT NULL,
+  `Description` text NOT NULL,
+  `IPAddress` varchar(15) DEFAULT NULL,
+  `LogDate` timestamp NULL DEFAULT CURRENT_TIMESTAMP,
+  PRIMARY KEY (`LogID`),
+  KEY `UserID` (`UserID`)
+) ENGINE=MyISAM AUTO_INCREMENT=130 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+
+--
+-- Dumping data for table `logs`
+--
+
+INSERT INTO `logs` (`LogID`, `UserID`, `Action`, `Description`, `IPAddress`, `LogDate`) VALUES
+(1, 1, 'LOGIN', 'User logged into system successfully', '192.168.1.50', '2024-01-15 06:30:15'),
+(2, 2, 'LOGIN', 'User logged into system successfully', '192.168.1.51', '2024-01-15 07:15:20'),
+(3, 1, 'CAMERA_VIEW', 'Accessed camera live feed: CAM-004', '192.168.1.50', '2024-01-15 06:45:10'),
+(4, 2, 'EVENT_ACKNOWLEDGE', 'Acknowledged event: EVT-2024-002', '192.168.1.51', '2024-01-15 07:30:45'),
+(5, 1, 'USER_MANAGEMENT', 'Created new user: auditor1', '192.168.1.50', '2024-01-15 08:20:30'),
+(6, 3, 'LOGIN', 'User logged into system successfully', '192.168.1.52', '2024-01-14 12:20:05'),
+(7, 2, 'ALERT_RESOLVE', 'Resolved alert: ALT-2024-001', '192.168.1.51', '2024-01-15 01:05:25'),
+(8, 1, 'SYSTEM_CONFIG', 'Updated camera settings: CAM-009', '192.168.1.50', '2024-01-15 09:15:40'),
+(9, 4, 'LOGIN', 'User logged into system successfully', '192.168.1.53', '2024-01-15 08:05:15'),
+(10, 2, 'REPORT_GENERATE', 'Generated security incident report', '192.168.1.51', '2024-01-15 10:30:20'),
+(11, 1, 'ACCESS_CONTROL', 'Modified access permissions for user: operator2', '192.168.1.50', '2024-01-15 11:45:35'),
+(12, 5, 'LOGIN', 'User logged into system successfully', '192.168.1.54', '2024-01-13 14:45:10'),
+(13, 3, 'EVENT_UPDATE', 'Updated event status: EVT-2024-006', '192.168.1.52', '2024-01-14 21:10:25'),
+(14, 1, 'BACKUP', 'Initiated system database backup', '192.168.1.50', '2024-01-15 12:20:50'),
+(15, 2, 'CAMERA_MAINTENANCE', 'Placed camera in maintenance: CAM-009', '192.168.1.51', '2024-01-15 13:35:15'),
+(16, 6, 'LOGIN', 'User logged into system successfully', '192.168.1.55', '2024-01-12 09:30:40'),
+(17, 1, 'AUDIT_VIEW', 'Accessed system audit logs', '192.168.1.50', '2024-01-15 14:10:30'),
+(18, 2, 'ALERT_CREATE', 'Manually created alert for suspicious activity', '192.168.1.51', '2024-01-15 15:25:45'),
+(19, 1, 'LOGOUT', 'User logged out of system', '192.168.1.50', '2024-01-15 16:00:00'),
+(20, 2, 'LOGOUT', 'User logged out of system', '192.168.1.51', '2024-01-15 16:30:00'),
+(21, 1, 'LOGIN', 'User logged into system successfully', '127.0.0.1', '2025-11-04 16:32:34'),
+(22, 1, 'EVENT_UPDATE', 'Updated event to RESOLVED: EVT-13', '127.0.0.1', '2025-11-04 16:32:57'),
+(23, 1, 'EVENT_UPDATE', 'Updated event to RESOLVED: EVT-2', '127.0.0.1', '2025-11-04 16:33:16'),
+(24, 1, 'LOGOUT', 'User logged out of system', '127.0.0.1', '2025-11-04 16:36:38'),
+(25, 7, 'LOGIN', 'User logged into system successfully', '127.0.0.1', '2025-11-04 16:36:54'),
+(26, 7, 'EVENT_UPDATE', 'Updated event to RESOLVED: EVT-11', '127.0.0.1', '2025-11-04 16:37:22'),
+(27, 7, 'EVENT_UPDATE', 'Updated event to RESOLVED: EVT-5', '127.0.0.1', '2025-11-04 16:37:41'),
+(28, 7, 'LOGIN', 'User logged into system successfully', '127.0.0.1', '2025-11-04 16:47:34'),
+(29, 7, 'LOGIN', 'User logged into system successfully', '127.0.0.1', '2025-11-04 17:01:37'),
+(30, 7, 'EVENT_UPDATE', 'Event 7 updated to RESOLVED', '127.0.0.1', '2025-11-04 17:02:06'),
+(31, 7, 'LOGIN', 'User logged into system successfully', '127.0.0.1', '2025-11-04 17:03:28'),
+(32, 7, 'LOGIN', 'User logged into system successfully', '127.0.0.1', '2025-11-04 17:24:06'),
+(33, 7, 'LOGOUT', 'User logged out of system', '127.0.0.1', '2025-11-04 17:24:20'),
+(34, 4, 'LOGIN', 'User logged into system successfully', '127.0.0.1', '2025-11-04 17:24:44'),
+(35, 1, 'LOGIN', 'User logged into system successfully', '127.0.0.1', '2025-11-04 17:42:30'),
+(36, 1, 'LOGIN', 'User logged into system successfully', '127.0.0.1', '2025-11-04 18:25:16'),
+(37, 1, 'EVENT_UPDATE', 'Event 9 updated to RESOLVED', '127.0.0.1', '2025-11-04 18:25:25'),
+(38, 1, 'EVENT_UPDATE', 'Event 10 updated to PENDING', '127.0.0.1', '2025-11-04 18:25:32'),
+(39, 1, 'LOGOUT', 'User logged out of system', '127.0.0.1', '2025-11-04 18:25:41'),
+(40, 4, 'LOGIN', 'User logged into system successfully', '127.0.0.1', '2025-11-04 18:25:59'),
+(41, 1, 'LOGIN', 'User logged into system successfully', '127.0.0.1', '2025-11-05 15:31:33'),
+(42, 1, 'LOGIN', 'User logged into system successfully', '127.0.0.1', '2025-11-05 15:35:40'),
+(43, 1, 'LOGIN', 'User logged into system successfully', '127.0.0.1', '2025-11-05 15:36:36'),
+(44, 1, 'LOGIN', 'User logged into system successfully', '127.0.0.1', '2025-11-05 15:37:32'),
+(45, 1, 'LOGIN', 'User logged into system successfully', '127.0.0.1', '2025-11-05 15:41:08'),
+(46, 1, 'LOGIN', 'User logged into system successfully', '127.0.0.1', '2025-11-05 15:44:31'),
+(47, 1, 'LOGIN', 'User logged into system successfully', '127.0.0.1', '2025-11-05 15:45:13'),
+(48, 1, 'LOGIN', 'User logged into system successfully', '127.0.0.1', '2025-11-05 15:48:36'),
+(49, 1, 'LOGIN', 'User logged into system successfully', '127.0.0.1', '2025-11-05 15:51:44'),
+(50, 1, 'LOGIN', 'User logged into system successfully', '127.0.0.1', '2025-11-05 15:53:32'),
+(51, 1, 'LOGIN', 'User logged into system successfully', '127.0.0.1', '2025-11-05 15:54:45'),
+(52, 1, 'LOGIN', 'User logged into system successfully', '127.0.0.1', '2025-11-05 15:56:53'),
+(53, 1, 'LOGIN', 'User logged into system successfully', '127.0.0.1', '2025-11-05 15:57:42'),
+(54, 1, 'LOGOUT', 'User logged out of system', '127.0.0.1', '2025-11-05 15:57:48'),
+(55, 1, 'LOGIN', 'User logged into system successfully', '127.0.0.1', '2025-11-05 15:58:22'),
+(56, 1, 'LOGOUT', 'User logged out of system', '127.0.0.1', '2025-11-05 16:02:49'),
+(57, 4, 'LOGIN', 'User logged into system successfully', '127.0.0.1', '2025-11-05 16:03:10'),
+(58, 1, 'LOGIN', 'User logged into system successfully', '127.0.0.1', '2025-11-05 16:17:19'),
+(59, 1, 'LOGIN', 'User logged into system successfully', '127.0.0.1', '2025-11-05 16:18:02'),
+(60, 1, 'LOGIN', 'User logged into system successfully', '127.0.0.1', '2025-11-05 16:19:31'),
+(61, 1, 'LOGIN', 'User logged into system successfully', '127.0.0.1', '2025-11-05 16:30:31'),
+(62, 1, 'LOGIN', 'User logged into system successfully', '127.0.0.1', '2025-11-05 16:32:09'),
+(63, 1, 'LOGIN', 'User logged into system successfully', '127.0.0.1', '2025-11-05 16:35:52'),
+(64, 1, 'LOGIN', 'User logged into system successfully', '127.0.0.1', '2025-11-05 16:39:40'),
+(65, 1, 'LOGIN', 'User logged into system successfully', '127.0.0.1', '2025-11-05 16:41:17'),
+(66, 1, 'EVENT_UPDATE', 'Event 11 updated to IN-PROGRESS', '127.0.0.1', '2025-11-05 16:41:33'),
+(67, 1, 'LOGIN', 'User logged into system successfully', '127.0.0.1', '2025-11-05 16:48:04'),
+(68, 1, 'LOGOUT', 'User logged out of system', '127.0.0.1', '2025-11-05 16:52:09'),
+(69, 1, 'LOGIN', 'User logged into system successfully', '127.0.0.1', '2025-11-05 16:55:27'),
+(70, 1, 'LOGOUT', 'User logged out of system', '127.0.0.1', '2025-11-05 16:55:30'),
+(71, 1, 'LOGIN', 'User logged into system successfully', '127.0.0.1', '2025-11-05 16:57:23'),
+(72, 1, 'LOGOUT', 'User logged out of system', '127.0.0.1', '2025-11-05 16:57:26'),
+(73, 1, 'LOGOUT', 'User logged out of system', '127.0.0.1', '2025-11-05 16:57:37'),
+(74, 1, 'LOGOUT', 'User logged out of system', '127.0.0.1', '2025-11-05 16:57:44'),
+(75, 1, 'LOGIN', 'User logged into system successfully', '127.0.0.1', '2025-11-05 16:59:49'),
+(76, 1, 'LOGOUT', 'User logged out of system', '127.0.0.1', '2025-11-05 16:59:52'),
+(77, 1, 'LOGOUT', 'User logged out of system', '127.0.0.1', '2025-11-05 16:59:56'),
+(78, 1, 'LOGOUT', 'User logged out of system', '127.0.0.1', '2025-11-05 16:59:59'),
+(79, 1, 'LOGIN', 'User logged into system successfully', '127.0.0.1', '2025-11-07 05:08:28'),
+(80, 1, 'LOGOUT', 'User logged out of system', '127.0.0.1', '2025-11-07 05:11:35'),
+(81, 4, 'LOGIN', 'User logged into system successfully', '127.0.0.1', '2025-11-07 05:11:59'),
+(82, 1, 'LOGIN', 'User logged into system successfully', '127.0.0.1', '2025-11-10 07:37:24'),
+(83, 1, 'LOGOUT', 'User logged out of system', '127.0.0.1', '2025-11-10 07:38:19'),
+(84, 1, 'LOGIN', 'User logged into system successfully', '127.0.0.1', '2025-11-10 07:38:41'),
+(85, 1, 'EVENT_UPDATE', 'Event 3 updated to IN-PROGRESS', '127.0.0.1', '2025-11-10 07:39:08'),
+(86, 1, 'LOGIN', 'User logged into system successfully', '127.0.0.1', '2025-11-10 17:03:26'),
+(87, 1, 'LOGOUT', 'User logged out of system', '127.0.0.1', '2025-11-10 17:03:56'),
+(88, 4, 'LOGIN', 'User logged into system successfully', '127.0.0.1', '2025-11-10 17:05:02'),
+(89, 4, 'LOGOUT', 'User logged out of system', '127.0.0.1', '2025-11-10 17:05:20'),
+(90, 2, 'LOGIN', 'User logged into system successfully', '127.0.0.1', '2025-11-10 17:05:40'),
+(91, 1, 'LOGIN', 'User logged into system successfully', '127.0.0.1', '2025-11-12 12:23:37'),
+(92, 1, 'LOGOUT', 'User logged out of system', '127.0.0.1', '2025-11-12 12:24:58'),
+(93, 4, 'LOGIN', 'User logged into system successfully', '127.0.0.1', '2025-11-12 12:25:41'),
+(94, 1, 'LOGIN', 'User logged into system successfully', '127.0.0.1', '2025-11-14 12:23:43'),
+(95, 1, 'EVENT_UPDATE', 'Event 5 updated to PENDING', '127.0.0.1', '2025-11-14 12:27:10'),
+(96, 1, 'LOGIN', 'User logged into system successfully', '127.0.0.1', '2025-11-15 06:01:38'),
+(97, 1, 'LOGIN', 'User logged into system successfully', '127.0.0.1', '2025-11-15 06:02:21'),
+(98, 1, 'LOGIN', 'User logged into system successfully', '127.0.0.1', '2025-11-15 06:11:21'),
+(99, 1, 'LOGIN', 'User logged into system successfully', '127.0.0.1', '2025-11-15 13:50:52'),
+(100, 1, 'LOGIN', 'User logged into system successfully', '127.0.0.1', '2025-11-20 07:06:42'),
+(101, 1, 'LOGIN', 'User logged into system successfully', '127.0.0.1', '2025-11-21 07:07:08'),
+(102, 1, 'LOGOUT', 'User logged out of system', '127.0.0.1', '2025-11-21 07:08:02'),
+(103, 1, 'LOGIN', 'User logged into system successfully', '127.0.0.1', '2025-11-21 07:15:15'),
+(104, 1, 'LOGOUT', 'User logged out of system', '127.0.0.1', '2025-11-21 07:17:06'),
+(105, 1, 'LOGIN', 'User logged into system successfully', '127.0.0.1', '2025-11-21 07:19:36'),
+(106, 1, 'LOGIN', 'User logged into system successfully', '127.0.0.1', '2025-11-29 15:18:10'),
+(107, 1, 'LOGIN', 'User logged into system successfully', '127.0.0.1', '2025-12-01 13:15:42'),
+(108, 1, 'LOGIN', 'User logged into system successfully', '127.0.0.1', '2025-12-01 15:03:59'),
+(109, 1, 'LOGOUT', 'User logged out of system', '127.0.0.1', '2025-12-01 15:06:32'),
+(110, 3, 'LOGIN', 'User logged into system successfully', '127.0.0.1', '2025-12-01 15:06:58'),
+(111, 3, 'LOGOUT', 'User logged out of system', '127.0.0.1', '2025-12-01 15:07:12'),
+(112, 5, 'LOGIN', 'User logged into system successfully', '127.0.0.1', '2025-12-01 15:07:46'),
+(113, 5, 'EVENT_UPDATE', 'Event 12 updated to IN-PROGRESS', '127.0.0.1', '2025-12-01 15:08:47'),
+(114, 1, 'LOGIN', 'User logged into system successfully', '127.0.0.1', '2025-12-02 18:42:23'),
+(115, 1, 'EVENT_UPDATE', 'Event 13 updated to IN-PROGRESS', '127.0.0.1', '2025-12-02 18:43:26'),
+(116, 1, 'LOGOUT', 'User logged out of system', '127.0.0.1', '2025-12-02 19:03:01'),
+(117, 2, 'LOGIN', 'User logged into system successfully', '127.0.0.1', '2025-12-02 19:04:26'),
+(118, 2, 'LOGOUT', 'User logged out of system', '127.0.0.1', '2025-12-02 19:05:27'),
+(119, 4, 'LOGIN', 'User logged into system successfully', '127.0.0.1', '2025-12-02 19:05:56'),
+(120, 1, 'LOGIN', 'User logged into system successfully', '127.0.0.1', '2025-12-04 06:45:53'),
+(121, 1, 'LOGIN', 'User logged into system successfully', '127.0.0.1', '2025-12-16 19:40:26'),
+(122, 1, 'LOGIN', 'User logged into system successfully', '127.0.0.1', '2025-12-17 13:40:37'),
+(123, 1, 'EVENT_UPDATE', 'Event 14 updated to RESOLVED', '127.0.0.1', '2025-12-17 13:58:17'),
+(124, 1, 'EVENT_UPDATE', 'Event 7 updated to IN-PROGRESS', '127.0.0.1', '2025-12-17 14:08:20'),
+(125, 1, 'LOGIN', 'User logged into system successfully', '127.0.0.1', '2025-12-18 12:14:43'),
+(126, 1, 'LOGOUT', 'User logged out of system', '127.0.0.1', '2025-12-18 13:09:18'),
+(127, 2, 'LOGIN', 'User logged into system successfully', '127.0.0.1', '2025-12-18 13:10:28'),
+(128, 2, 'LOGOUT', 'User logged out of system', '127.0.0.1', '2025-12-18 13:12:32'),
+(129, 8, 'LOGIN', 'User logged into system successfully', '127.0.0.1', '2025-12-18 13:12:48');
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `users`
+--
+
+DROP TABLE IF EXISTS `users`;
+CREATE TABLE IF NOT EXISTS `users` (
+  `UserID` int NOT NULL AUTO_INCREMENT,
+  `Username` varchar(50) NOT NULL,
+  `PasswordHash` varchar(255) NOT NULL,
+  `Email` varchar(100) NOT NULL,
+  `FullName` varchar(100) NOT NULL,
+  `Role` enum('ADMIN','OPERATOR','VIEWER') NOT NULL,
+  `CreatedAt` timestamp NULL DEFAULT CURRENT_TIMESTAMP,
+  `LastLogin` timestamp NULL DEFAULT NULL,
+  PRIMARY KEY (`UserID`),
+  UNIQUE KEY `Username` (`Username`),
+  UNIQUE KEY `Email` (`Email`)
+) ENGINE=MyISAM AUTO_INCREMENT=10 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+
+--
+-- Dumping data for table `users`
+--
+
+INSERT INTO `users` (`UserID`, `Username`, `PasswordHash`, `Email`, `FullName`, `Role`, `CreatedAt`, `LastLogin`) VALUES
+(1, 'Claudine', 'Admin123', 'claudinem@securitycompany.com', 'Claudine MUJAWIMANA', 'ADMIN', '2025-10-26 15:26:31', '2025-10-30 09:08:05'),
+(2, 'operator1', 'Operator1123', 'gikundirosandrinen@securitycompany.com', 'NEZERWA GIKUNDIRO Sandrine', 'OPERATOR', '2025-10-26 15:26:31', '2024-01-15 07:15:00'),
+(3, 'operator2', 'Operator2123', 'rodriguem@securitycompany.com', 'MUSONI Rodrigue', 'OPERATOR', '2025-10-26 15:26:31', '2024-01-14 12:20:00'),
+(8, 'Ramba', 'Ramba', 'ramba.security@gmail.com', 'Ramba Leonore', 'VIEWER', '2025-12-02 20:47:42', NULL),
+(4, 'viewer1', 'Viewer1123', 'habumugishae@securitycompany.com', 'HABUMUGISHA Eric', 'VIEWER', '2025-10-26 15:26:31', '2024-01-15 08:05:00'),
+(5, 'viewer2', 'Viewer2123', 'yvonnetumukunde@securitycompany.com', 'TUMUKUNDE Yvonne', 'VIEWER', '2025-10-26 15:26:31', '2024-01-13 14:45:00'),
+(9, 'Mbabazi', 'Henrette', 'henriette@gmail.com', 'MBABAZI Henriette', 'OPERATOR', '2025-12-17 16:49:47', NULL);
+COMMIT;
+
+
